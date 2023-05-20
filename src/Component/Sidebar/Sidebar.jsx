@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Dropdown, Icon, Input, Menu } from "semantic-ui-react";
+import { Dropdown, Icon, Input, Menu,Button} from "semantic-ui-react";
 const Sidebar = () => {
   const [activeItem, setActiveItem] = useState("home");
 
@@ -39,20 +39,20 @@ const Sidebar = () => {
           </Menu.Menu>
         </Menu.Item>
 
-        <Menu.Item
+        {/* <Menu.Item
           name="browse"
           active={activeItem === "browse"}
           onClick={handleItemClick}
         >
           <Icon name="grid layout" />
           Browse
-        </Menu.Item>
+        </Menu.Item> */}
         <Menu.Item
           name="messages"
           active={activeItem === "messages"}
           onClick={handleItemClick}
         >
-          Messages
+       
         </Menu.Item>
 
         <Dropdown item text="More">
