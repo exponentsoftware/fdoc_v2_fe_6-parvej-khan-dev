@@ -7,24 +7,54 @@ import {
   Select,
   Modal,
 } from "semantic-ui-react";
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { createEvents, postActions } from "../../Redux/Slice/eventSlice";
 
 const Navbar = () => {
   const [activeItem, setActiveItem] = useState("home");
-
+  const eventCreated = useSelector((state) => state.event.post);
+  const error = useSelector((state) => state.event.error);
   const handleItemClick = (e, { name }) => setActiveItem(name);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [value, setValue] = useState({
+    title: "",
+    description: "",
+    eventDate: "",
+    Address: "",
+    organiserContact: "",
+    image: "",
+  });
 
   const [open, setOpen] = useState(false);
-
+  const dispatch = useDispatch();
   function createEventModelOpen() {
     setOpen((prev) => !prev);
   }
 
-  const genderOptions = [
-    { key: "m", text: "Male", value: "male" },
-    { key: "f", text: "Female", value: "female" },
-    { key: "o", text: "Other", value: "other" },
-  ];
+  const handleCreateEvent = () => {
+    try {
+      let formData = new FormData();
+
+      formData.append("title", value.title);
+      formData.append("description", value.description);
+      formData.append("eventDate", value.eventDate);
+      formData.append("Address", value.Address);
+      formData.append("organiserContact", value.organiserContact);
+      formData.append("image", selectedImage);
+      console.log(formData, "formdata");
+      dispatch(createEvents(formData));
+    } catch (error) {
+      console.error("Error creating event:", error.message);
+    }
+  };
+
+  // const genderOptions = [
+  //   { key: "m", text: "Male", value: "male" },
+  //   { key: "f", text: "Female", value: "female" },
+  //   { key: "o", text: "Other", value: "other" },
+  // ];
 
   return (
     <div>
@@ -74,49 +104,93 @@ const Navbar = () => {
               <Form.Field
                 id="form-input-control-first-name"
                 control={Input}
-                label="First name"
-                placeholder="First name"
+                label="Event Name"
+                placeholder="Event name"
+                value={value.title}
+                onChange={(e) => setValue({ ...value, title: e.target.value })}
               />
               <Form.Field
                 id="form-input-control-last-name"
                 control={Input}
-                label="Last name"
-                placeholder="Last name"
+                label="Address"
+                placeholder="Address"
+                value={value.Address}
+                onChange={(e) =>
+                  setValue({ ...value, Address: e.target.value })
+                }
               />
+
               <Form.Field
+                id="form-input-control-last-name"
+                control={Input}
+                type="date"
+                label="Event Date"
+                placeholder="Date"
+                value={value.eventDate}
+                onChange={(e) =>
+                  setValue({ ...value, eventDate: e.target.value })
+                }
+              />
+
+              {/* <Form.Field
                 control={Select}
                 options={genderOptions}
                 label={{
-                  children: "Gender",
+                  children: "Min Age",
                   htmlFor: "form-select-control-gender",
                 }}
-                placeholder="Gender"
+                placeholder="Min Age Required"
                 search
                 searchInput={{ id: "form-select-control-gender" }}
-              />
+              /> */}
             </Form.Group>
             <Form.Field
               id="form-textarea-control-opinion"
               control={TextArea}
-              label="Opinion"
-              placeholder="Opinion"
+              label="Description"
+              placeholder="description"
+              value={value.description}
+              onChange={(e) =>
+                setValue({ ...value, description: e.target.value })
+              }
+            />
+            <Form.Field
+              id="form-input-control-last-name"
+              control={Input}
+              type="file"
+              label="Images"
+              placeholder="Images"
+              name="image"
+              onChange={(event) => {
+                console.log(event.target.files[0]);
+                setSelectedImage(event.target.files[0]);
+              }}
             />
             <Form.Field
               id="form-input-control-error-email"
               control={Input}
               label="Email"
               placeholder="joe@schmoe.com"
-              error={{
-                content: "Please enter a valid email address",
-                pointing: "below",
-              }}
+              value={value.organiserContact}
+              onChange={(e) =>
+                setValue({ ...value, organiserContact: e.target.value })
+              }
+              // error={{
+              //   content: "Please enter a valid email address",
+              //   pointing: "below",
+              // }}
             />
-            
           </Form>
         </Modal.Content>
         <Modal.Actions>
-          <Button positive onClick={() => setOpen(false)}>
-            Yes
+          <Button
+            positive
+            onClick={() => {
+              handleCreateEvent();
+              setOpen(false);
+            }}
+          >
+            Create
           </Button>
         </Modal.Actions>
       </Modal>

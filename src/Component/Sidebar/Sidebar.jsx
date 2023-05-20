@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Dropdown, Icon, Input, Menu,Button} from "semantic-ui-react";
+import { useState } from "react";
+import { Dropdown, Input, Menu } from "semantic-ui-react";
 const Sidebar = () => {
   const [activeItem, setActiveItem] = useState("home");
 
@@ -7,7 +7,7 @@ const Sidebar = () => {
   return (
     <div>
       {" "}
-      <Menu vertical style={{ height: '86vh' }}>
+      <Menu vertical style={{ height: "86vh" }}>
         <Menu.Item>
           <Input placeholder="Search..." />
         </Menu.Item>
@@ -51,9 +51,7 @@ const Sidebar = () => {
           name="messages"
           active={activeItem === "messages"}
           onClick={handleItemClick}
-        >
-       
-        </Menu.Item>
+        ></Menu.Item>
 
         <Dropdown item text="More">
           <Dropdown.Menu>
