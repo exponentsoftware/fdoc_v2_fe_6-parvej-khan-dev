@@ -58,8 +58,8 @@ const Navbar = () => {
   // ];
 
   return (
-    <div>
-      <Menu secondary style={{ padding: 5 }}>
+    <div >
+      <Menu secondary style={{ padding: 5, display:"flex",jusitfyContent:'center', alignContent:'center' }}>
         <Link to={'/'}>
           
         <Menu.Item

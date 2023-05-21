@@ -2,7 +2,15 @@ import EventCard from "./EventCard";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getEvents } from "../../Redux/Slice/eventSlice";
-import { Loader, Image, Segment } from "semantic-ui-react";
+import {
+  Loader,
+  Image,
+  Segment,
+  Button,
+  Card,
+  Divider,
+  Placeholder,
+} from "semantic-ui-react";
 import { Link } from "react-router-dom";
 const Event = () => {
   const events = useSelector((state) => state.event.events);
@@ -25,37 +33,67 @@ const Event = () => {
   }, []);
 
   return (
-    <div>
-      {loading ? (
-        <Loader active size="big" />
-      ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)", // Set 4 columns
-            gridGap: "15px",
-          }}
-        >
-          {events.map((item,index) => {
-            return (
-              <div style={{ marginLeft: 15, display: "flex" }} key={item?.id}>
-                <Link to={`/eventDetails/${item.id}`}>
-                  <EventCard
-                    name={item?.title}
-                    des={item?.description}
-                    date={item?.eventDate}
-                    organizer={item?.organiserContact}
-                    image={item?.image}
-                    location={item?.Address}
-                    index={index}
+    <>
+      <div style={{ marginLeft: 10 }}>
+        <Card.Group doubling itemsPerRow={3} stackable>
+          {events.map((card, index) => (
+            <Card key={card.title}>
+              {loading ? (
+                <Placeholder>
+                  <Placeholder.Image square />
+                </Placeholder>
+              ) : (
+                <div
+                  style={{
+                    maxHeight: "200px",
+                    overflow: "hidden",
+                    borderRadius: 20,
+                  }}
+                >
+                  <Image
+                    src={`https://picsum.photos/200/300?random=${index}`}
+                    style={{
+                      objectFit: "cover",
+                      height: "100%",
+                      width: "100%",
+                    }}
                   />
-                </Link>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
+                </div>
+              )}
+
+              <Card.Content>
+                {loading ? (
+                  <Placeholder>
+                    <Placeholder.Header>
+                      <Placeholder.Line length="very short" />
+                      <Placeholder.Line length="medium" />
+                    </Placeholder.Header>
+                    <Placeholder.Paragraph>
+                      <Placeholder.Line length="short" />
+                    </Placeholder.Paragraph>
+                  </Placeholder>
+                ) : (
+                  <>
+                    <Card.Header>{card.title}</Card.Header>
+                    <Card.Meta>{card.eventDate}</Card.Meta>
+                    <Card.Description>
+                      {card.description?.substring(0, 100)}
+                    </Card.Description>
+                  </>
+                )}
+              </Card.Content>
+
+              <Card.Content extra>
+                <Button disabled={loading} color="red">
+                  Edit
+                </Button>
+                <Button disabled={loading}>Delete</Button>
+              </Card.Content>
+            </Card>
+          ))}
+        </Card.Group>
+      </div>
+    </>
   );
 };
 

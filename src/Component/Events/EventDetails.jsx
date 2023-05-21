@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { Image, Card, Icon, Button } from "semantic-ui-react";
+import { Image, Card, Icon, Button, Popup } from "semantic-ui-react";
 import { getEventByID } from "../../Redux/Slice/eventSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
@@ -37,14 +37,14 @@ const EventDetails = () => {
   ];
 
   const breadcrumbLinks = breadcrumbs.map((breadcrumb, index) => (
-    <span key={index} >
+    <span key={index}>
       {/* <Link to={breadcrumb.path}>{breadcrumb.label}</Link> */}
       {/* {index < breadcrumbs.length - 1 && " > "} */}
       <Breadcrumb>
         <Link to={breadcrumb.path}>
           <Breadcrumb.Section link>{breadcrumb.label}</Breadcrumb.Section>
 
-          {index < breadcrumbs.length - 1 && <Breadcrumb.Divider /> }
+          {index < breadcrumbs.length - 1 && <Breadcrumb.Divider />}
         </Link>
       </Breadcrumb>
     </span>
@@ -56,14 +56,18 @@ const EventDetails = () => {
         <Loader active size="big" />
       ) : (
         <div>
-          <div style={{margin:"10px",float:'right',  backgroundColor:"white"}}>
+          <div
+            style={{ margin: "10px", float: "right", backgroundColor: "white" }}
+          >
             {/* Breadcrumbs */}
             {breadcrumbLinks}
           </div>{" "}
-          <Image
-            src="https://assets-in.bmscdn.com/nmcms/events/banner/desktop/media-desktop-gem-of-a-person-by-devesh-dixit-0-2022-8-16-t-6-21-8.jpg"
-            fluid
-          />
+          <div>
+            <Image
+              src="https://assets-in.bmscdn.com/nmcms/events/banner/desktop/media-desktop-gem-of-a-person-by-devesh-dixit-0-2022-8-16-t-6-21-8.jpg"
+              fluid
+            />
+          </div>
           <Card
             style={{
               width: "95vw",
@@ -98,17 +102,43 @@ const EventDetails = () => {
                     Comedy | Hindi | 16+ | 1.5 Hours
                   </Card.Meta>
                 </div>
-                <Button
+                <div
                   style={{
-                    fontSize: "1.5rem",
-                    backgroundColor: "red",
-                    color: "white",
-                    width: 150,
-                    height: 50,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    alignContent: "center",
                   }}
                 >
-                  Book
-                </Button>
+                  <Popup
+                    content="Edit & Delete Event"
+                    position='left center'
+                    trigger={
+                      <Icon
+                        name="ellipsis vertical"
+                        style={{
+                          marginBottom: 10,
+                        
+                          fontSize: 20,
+                          cursor: "pointer",
+                        }}
+                       
+                      />
+                    }
+                  />
+
+                  {/* <Button
+                    style={{
+                      fontSize: "1.5rem",
+                      backgroundColor: "red",
+                      color: "white",
+                      width: 150,
+                      height: 50,
+                    }}
+                  >
+                    Book
+                  </Button> */}
+                </div>
               </section>
               <Card.Description
                 style={{
