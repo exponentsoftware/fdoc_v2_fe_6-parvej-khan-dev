@@ -1,109 +1,167 @@
+import { useParams } from "react-router-dom";
 import { Image, Card, Icon, Button } from "semantic-ui-react";
+import { getEventByID } from "../../Redux/Slice/eventSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Loader } from "semantic-ui-react";
+import { Breadcrumb } from "semantic-ui-react";
 const EventDetails = () => {
+  const event = useSelector((state) => state.event.post);
+  const error = useSelector((state) => state.event.error);
+  const loading = useSelector((state) => state.event.loading);
+  const [data, setData] = useState({});
+  const dispatch = useDispatch();
+  const { id } = useParams();
+
+  console.log(id, "id from event");
+  console.log(event, "event");
+
+  useEffect(() => {
+    if (id) {
+      dispatch(getEventByID(id))
+        .unwrap()
+        .then((res) => {
+          console.log(res);
+          setData(res);
+        })
+        .catch((err) => {
+          console.log(err, "Err");
+        });
+    }
+  }, [id]);
+
+  const breadcrumbs = [
+    { label: "Home", path: "/" },
+    { label: "Event Page", path: `/eventDetails/${id}` },
+  ];
+
+  const breadcrumbLinks = breadcrumbs.map((breadcrumb, index) => (
+    <span key={index} >
+      {/* <Link to={breadcrumb.path}>{breadcrumb.label}</Link> */}
+      {/* {index < breadcrumbs.length - 1 && " > "} */}
+      <Breadcrumb>
+        <Link to={breadcrumb.path}>
+          <Breadcrumb.Section link>{breadcrumb.label}</Breadcrumb.Section>
+
+          {index < breadcrumbs.length - 1 && <Breadcrumb.Divider /> }
+        </Link>
+      </Breadcrumb>
+    </span>
+  ));
+
   return (
     <div>
-      {" "}
-      <Image
-        src="https://assets-in.bmscdn.com/nmcms/events/banner/desktop/media-desktop-gem-of-a-person-by-devesh-dixit-0-2022-8-16-t-6-21-8.jpg"
-        fluid
-      />
-      <Card
-        style={{
-          width: "95vw",
-          justifyContent: "center",
-
-          marginLeft: 10,
-          marginRight: 10,
-        }}
-      >
-        <Card.Content>
-          <section
+      {loading ? (
+        <Loader active size="big" />
+      ) : (
+        <div>
+          <div style={{margin:"10px",float:'right',  backgroundColor:"white"}}>
+            {/* Breadcrumbs */}
+            {breadcrumbLinks}
+          </div>{" "}
+          <Image
+            src="https://assets-in.bmscdn.com/nmcms/events/banner/desktop/media-desktop-gem-of-a-person-by-devesh-dixit-0-2022-8-16-t-6-21-8.jpg"
+            fluid
+          />
+          <Card
             style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
+              width: "95vw",
+              justifyContent: "center",
+
+              marginLeft: 10,
+              marginRight: 10,
             }}
           >
-            <div>
-              <Card.Header style={{ fontSize: "1.7rem", lineHeight: "2.3rem" }}>
-                Gem Of A Person by Devesh Dixit
-              </Card.Header>
-              <Card.Meta
+            <Card.Content>
+              <section
                 style={{
-                  fontSize: "18px",
-                  fontWeight: "500",
-                  lineHeight: "3.5rem",
-                  color: "black",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                 }}
               >
-                Comedy | Hindi | 16+ | 1.5 Hours
-              </Card.Meta>
-            </div>
-            <Button
+                <div>
+                  <Card.Header
+                    style={{ fontSize: "1.7rem", lineHeight: "2.3rem" }}
+                  >
+                    {data.title}
+                  </Card.Header>
+                  <Card.Meta
+                    style={{
+                      fontSize: "18px",
+                      fontWeight: "500",
+                      lineHeight: "3.5rem",
+                      color: "black",
+                    }}
+                  >
+                    Comedy | Hindi | 16+ | 1.5 Hours
+                  </Card.Meta>
+                </div>
+                <Button
+                  style={{
+                    fontSize: "1.5rem",
+                    backgroundColor: "red",
+                    color: "white",
+                    width: 150,
+                    height: 50,
+                  }}
+                >
+                  Book
+                </Button>
+              </section>
+              <Card.Description
+                style={{
+                  width: "80%",
+                }}
+              >
+                {data.description}
+              </Card.Description>
+            </Card.Content>
+            <Card.Content
+              extra
               style={{
-                fontSize: "1.5rem",
-                backgroundColor: "red",
-                color: "white",
-                width: 150,
-                height: 50,
+                display: "flex",
+                justifyContent: "flex-start",
+                alignItems: "center",
               }}
             >
-              Book
-            </Button>
-          </section>
-          <Card.Description
-            style={{
-              width: "80%",
-            }}
-          >
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Vitae
-            molestiae consequatur asperiores dolorem provident facere, laborum
-            pariatur temporibus veniam incidunt in expedita labore?
-          </Card.Description>
-        </Card.Content>
-        <Card.Content
-          extra
-          style={{
-            display: "flex",
-            justifyContent: "flex-start",
-            alignItems: "center",
-          }}
-        >
-          <a style={{ marginRight: 20 }}>
-            <Icon name="calendar alternate" />
-            12-May-2023
-          </a>
+              <a style={{ marginRight: 20 }}>
+                <Icon name="calendar alternate" />
+                {data.eventDate}
+              </a>
 
-          <a style={{ marginRight: 20 }}>
-            <Icon name="osi" />
-            Organized by : Parvej khan
-          </a>
-          <a style={{ marginRight: 20 }}>
-            <Icon name="location arrow" />
-            Hyderabad
-          </a>
-        </Card.Content>
-      </Card>
-      <section className="host" style={{ marginLeft: 10 }}>
-        <Card>
-          <h3 style={{ margin: 10 }}>Artist</h3>
-          {/* <Image
-            size="medium"
-           
-            wrapped
-            // ui={false}
-          /> */}
-              <Image  size="small"  src="https://react.semantic-ui.com/images/avatar/large/daniel.jpg" />
-          
-          <Card.Content>
-            <Card.Header>Daniel</Card.Header>
-            <Card.Meta>Joined in 2016</Card.Meta>
-            <Card.Description>
-              Daniel is a comedian living in Nashville.
-            </Card.Description>
-          </Card.Content>
-        </Card>
-      </section>
+              <a style={{ marginRight: 20 }}>
+                <Icon name="osi" />
+                Organized by : {data.organiserContact}
+              </a>
+              <a style={{ marginRight: 20 }}>
+                <Icon name="location arrow" />
+                {data.Address}
+              </a>
+            </Card.Content>
+          </Card>
+          <section className="host" style={{ marginLeft: 10 }}>
+            <Card style={{ maxWidth: 180 }}>
+              <h3 style={{ margin: 10 }}>Artist</h3>
+
+              <Image
+                size="small"
+                style={{ margin: "0 auto" }}
+                src="https://react.semantic-ui.com/images/avatar/large/daniel.jpg"
+              />
+
+              <Card.Content>
+                <Card.Header>Daniel</Card.Header>
+                <Card.Meta>Joined in 2016</Card.Meta>
+                <Card.Description>
+                  Daniel is a comedian living in Nashville.
+                </Card.Description>
+              </Card.Content>
+            </Card>
+          </section>
+        </div>
+      )}
     </div>
   );
 };

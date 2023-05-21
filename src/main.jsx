@@ -16,7 +16,7 @@ const router = createBrowserRouter([
     element: <App />,
   },
   {
-    path: `/eventDetails`,
+    path: `/eventDetails/:id`,
     element: <>
     <Navbar />
     <EventDetails />,

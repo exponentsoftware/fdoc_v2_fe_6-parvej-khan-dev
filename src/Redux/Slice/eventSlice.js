@@ -33,6 +33,7 @@ const getEvents = createAsyncThunk("/events", async () => {
 });
 const initialState = {
   post: null,
+  events: [],
   loading: false,
   error: null,
 };
@@ -50,7 +51,7 @@ const eventSlice = createSlice({
       })
       .addCase(getEvents.fulfilled, (state, action) => {
         state.loading = false;
-        state.post = action.payload;
+        state.events = action.payload;
       })
       .addCase(getEvents.rejected, (state, action) => {
         state.loading = false;
