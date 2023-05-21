@@ -87,6 +87,9 @@ const Event = () => {
                 <Button disabled={loading} color="red">
                   Edit
                 </Button>
+                <Link to={`/eventDetails/${card.id}`}>
+                  <Button disabled={loading}>View</Button>
+                </Link>
                 <Button disabled={loading}>Delete</Button>
               </Card.Content>
             </Card>
