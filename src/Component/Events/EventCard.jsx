@@ -1,10 +1,10 @@
 import { Card, Icon, Image } from "semantic-ui-react";
 
-const EventCard = ({ name, des, date, organizer, image }) => {
-//   console.log(image, "imagess -----");
-//   let data = image;
-//   console.log(data.data, "data -----------");
-//   const base64Image = data?.data;
+const EventCard = ({ name, des, date, organizer, image, index }) => {
+  //   console.log(image, "imagess -----");
+  //   let data = image;
+  //   console.log(data.data, "data -----------");
+  //   const base64Image = data?.data;
   return (
     <div style={{ maxWidth: "230px" }}>
       <Card
@@ -19,7 +19,7 @@ const EventCard = ({ name, des, date, organizer, image }) => {
           style={{ maxHeight: "200px", overflow: "hidden", borderRadius: 20 }}
         >
           <Image
-            src="https://assets-in.bmscdn.com/discovery-catalog/events/tr:w-400,h-600,bg-CCCCCC:oi-discovery-catalog@@icons@@bms_premiere_v1.png,oit-false,ofo-bottom_left:q-80/et00353346-xaqarvfhbp-portrait.jpg"
+            src={`https://picsum.photos/200/300?random=${index}`}
             // src={`data:image/png;base64, ${data.data}`}
             wrapped
             ui={false}
@@ -30,7 +30,7 @@ const EventCard = ({ name, des, date, organizer, image }) => {
           <Card.Header>{name}</Card.Header>
           <Card.Meta>Joined {date}</Card.Meta>
           <Card.Meta>Manage By {organizer}</Card.Meta>
-          <Card.Description>{des}</Card.Description>
+          <Card.Description>{des?.substring(0, 50)} .....</Card.Description>
         </Card.Content>
         <Card.Content extra>
           <a>

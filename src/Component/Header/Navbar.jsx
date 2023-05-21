@@ -11,6 +11,7 @@ import {
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createEvents, postActions } from "../../Redux/Slice/eventSlice";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [activeItem, setActiveItem] = useState("home");
@@ -59,11 +60,14 @@ const Navbar = () => {
   return (
     <div>
       <Menu secondary style={{ padding: 5 }}>
+        <Link to={'/'}>
+          
         <Menu.Item
           name="home"
           active={activeItem === "home"}
           onClick={handleItemClick}
-        />
+          />
+          </Link>
         <Menu.Item
           name="Events"
           active={activeItem === "Events"}

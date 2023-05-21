@@ -36,7 +36,7 @@ const Event = () => {
             gridGap: "15px",
           }}
         >
-          {events.map((item) => {
+          {events.map((item,index) => {
             return (
               <div style={{ marginLeft: 15, display: "flex" }} key={item?.id}>
                 <Link to={`/eventDetails/${item.id}`}>
@@ -47,6 +47,7 @@ const Event = () => {
                     organizer={item?.organiserContact}
                     image={item?.image}
                     location={item?.Address}
+                    index={index}
                   />
                 </Link>
               </div>
