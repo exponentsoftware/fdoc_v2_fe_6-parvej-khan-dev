@@ -31,19 +31,65 @@ const getEvents = createAsyncThunk("/events", async () => {
     throw error.response.data;
   }
 });
+
+const updateEvents = createAsyncThunk(
+  "/update/event",
+  async (eventId, data) => {
+    try {
+      const res = await axios.put(`${API}/update/event/${eventId}`, data);
+      return res.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  }
+);
+
+const deleteEvent = createAsyncThunk("delete/event", async (id) => {
+  try {
+    const res = await axios.delete(`${API}/delete/event/${id}`);
+    return res.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+});
 const initialState = {
   post: null,
   events: [],
+  updateEvent: null,
+  deletedEvent: null,
   loading: false,
   error: null,
+  updateModelOpen: false,
 };
 
 const eventSlice = createSlice({
   name: "event",
   initialState,
-  reducers: {},
+  reducers: {
+    openModal: (state) => {
+      state.updateModelOpen = !state.updateModelOpen;
+    },
+    closeModal: (state) => {
+      state.updateModelOpen = !state.updateModelOpen;
+    },
+    setEvents: (state, action) => {
+      const categories = action.payload;
+      // Update the events state based on the categories
+      // For example, filter events based on categories:
+      state.events = state.events.filter((event) =>
+        categories.includes(event.category.name)
+      );
+    },
+  },
   extraReducers: (builder) => {
     builder
+      //update model
+      .addCase(postActions.openModal, (state) => {
+        state.updateModelOpen = !state.updateModelOpen;
+      })
+      .addCase(postActions.closeModal, (state) => {
+        state.updateModelOpen = !state.updateModelOpen;
+      })
       // * Get All Events
       .addCase(getEvents.pending, (state) => {
         state.loading = true;
@@ -84,10 +130,38 @@ const eventSlice = createSlice({
       .addCase(createEvents.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
+      })
+
+      //Update Events
+      .addCase(updateEvents.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateEvents.fulfilled, (state, action) => {
+        state.loading = false;
+        state.updateEvent = action.payload;
+      })
+      .addCase(updateEvents.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+
+      // delete Events
+      .addCase(deleteEvent.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteEvent.fulfilled, (state, action) => {
+        state.loading = false;
+        state.deletedEvent = action.payload;
+      })
+      .addCase(deleteEvent.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
       });
   },
 });
 
 export const { actions: postActions } = eventSlice;
 export const eventReducer = eventSlice.reducer;
-export { createEvents, getEventByID, getEvents };
+export { createEvents, getEventByID, getEvents, updateEvents, deleteEvent };

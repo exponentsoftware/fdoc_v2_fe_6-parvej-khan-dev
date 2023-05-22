@@ -7,18 +7,20 @@ import {
   Select,
   Modal,
 } from "semantic-ui-react";
-
+import { getCatagories } from "../../Redux/Slice/categorySlice";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createEvents, postActions } from "../../Redux/Slice/eventSlice";
+import { createEvents } from "../../Redux/Slice/eventSlice";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [activeItem, setActiveItem] = useState("home");
   const eventCreated = useSelector((state) => state.event.post);
+  const categories = useSelector((state) => state.category.categories);
   const error = useSelector((state) => state.event.error);
   const handleItemClick = (e, { name }) => setActiveItem(name);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [reload, setReload] = useState(false);
   const [value, setValue] = useState({
     title: "",
     description: "",
@@ -26,6 +28,7 @@ const Navbar = () => {
     Address: "",
     organiserContact: "",
     image: "",
+    category: "",
   });
 
   const [open, setOpen] = useState(false);
@@ -43,31 +46,51 @@ const Navbar = () => {
       formData.append("eventDate", value.eventDate);
       formData.append("Address", value.Address);
       formData.append("organiserContact", value.organiserContact);
-      formData.append("image", selectedImage);
+      // formData.append("image", selectedImage);
+      formData.append("category", value.category);
       console.log(formData, "formdata");
-      dispatch(createEvents(formData));
+      dispatch(createEvents(value));
+      setReload((value) => !value);
     } catch (error) {
       console.error("Error creating event:", error.message);
     }
   };
 
-  // const genderOptions = [
-  //   { key: "m", text: "Male", value: "male" },
-  //   { key: "f", text: "Female", value: "female" },
-  //   { key: "o", text: "Other", value: "other" },
-  // ];
+  useEffect(() => {
+    // get All Categories
 
+    dispatch(getCatagories())
+      .unwrap()
+      .then((res) => {
+        console.log("catgory", res);
+        // setData(res);
+      })
+      .catch((err) => {
+        console.log(err, "from category");
+      });
+  }, [reload]);
+
+  const categoryOptions = categories.map((category) => {
+    return { key: category._id, text: category.name, value: category._id };
+  });
   return (
-    <div >
-      <Menu secondary style={{ padding: 5, display:"flex",jusitfyContent:'center', alignContent:'center' }}>
-        <Link to={'/'}>
-          
-        <Menu.Item
-          name="home"
-          active={activeItem === "home"}
-          onClick={handleItemClick}
+    <div>
+      <Menu
+        secondary
+        style={{
+          padding: 5,
+          display: "flex",
+          jusitfyContent: "center",
+          alignContent: "center",
+        }}
+      >
+        <Link to={"/"}>
+          <Menu.Item
+            name="home"
+            active={activeItem === "home"}
+            onClick={handleItemClick}
           />
-          </Link>
+        </Link>
         <Menu.Item
           name="Events"
           active={activeItem === "Events"}
@@ -135,18 +158,6 @@ const Navbar = () => {
                   setValue({ ...value, eventDate: e.target.value })
                 }
               />
-
-              {/* <Form.Field
-                control={Select}
-                options={genderOptions}
-                label={{
-                  children: "Min Age",
-                  htmlFor: "form-select-control-gender",
-                }}
-                placeholder="Min Age Required"
-                search
-                searchInput={{ id: "form-select-control-gender" }}
-              /> */}
             </Form.Group>
             <Form.Field
               id="form-textarea-control-opinion"
@@ -158,7 +169,7 @@ const Navbar = () => {
                 setValue({ ...value, description: e.target.value })
               }
             />
-            <Form.Field
+            {/* <Form.Field
               id="form-input-control-last-name"
               control={Input}
               type="file"
@@ -168,6 +179,22 @@ const Navbar = () => {
               onChange={(event) => {
                 console.log(event.target.files[0]);
                 setSelectedImage(event.target.files[0]);
+              }}
+            /> */}
+            <Form.Field
+              control={Select}
+              options={categoryOptions}
+              label={{
+                children: "Category",
+                htmlFor: "form-select-control-gender",
+              }}
+              placeholder="Category"
+              value={value.category}
+              search
+              searchInput={{ id: "form-select-control-gender" }}
+              onChange={(e, m) => {
+                setValue({ ...value, category: m.value });
+                console.log("---------m--------", m);
               }}
             />
             <Form.Field
@@ -179,10 +206,6 @@ const Navbar = () => {
               onChange={(e) =>
                 setValue({ ...value, organiserContact: e.target.value })
               }
-              // error={{
-              //   content: "Please enter a valid email address",
-              //   pointing: "below",
-              // }}
             />
           </Form>
         </Modal.Content>

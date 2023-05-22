@@ -99,7 +99,7 @@ const EventDetails = () => {
                       color: "black",
                     }}
                   >
-                    Comedy | Hindi | 16+ | 1.5 Hours
+                   {data?.category?.name} | Hindi | 16+ | 1.5 Hours
                   </Card.Meta>
                 </div>
                 <div

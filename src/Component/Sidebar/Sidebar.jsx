@@ -1,7 +1,31 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dropdown, Input, Menu } from "semantic-ui-react";
+import { useDispatch, useSelector } from "react-redux";
+// import { getCatagories } from "../../Redux/Slice/categorySlice";
+import { postActions } from "../../Redux/Slice/eventSlice";
+import { getCatagories } from "../../Redux/Slice/categorySlice";
 const Sidebar = () => {
+  const dispatch = useDispatch();
   const [activeItem, setActiveItem] = useState("home");
+  const categories = useSelector((state) => state.category.categories);
+  const events = useSelector((state) => state.event.events);
+
+  useEffect(() => {
+    dispatch(getCatagories());
+  }, [dispatch]);
+
+  const handleCategoryChange = (selectedCategories) => {
+    console.log(selectedCategories, "selectCatries");
+    dispatch(postActions.setEvents(selectedCategories));
+  };
+
+  console.log;
+
+  const CategoriesFilter = categories.map((category) => {
+    return { key: category._id, text: category.name, value: category.name };
+  });
+
+  console.log(CategoriesFilter, "CategoriesFilter ");
 
   const handleItemClick = (e, { name }) => setActiveItem(name);
   return (
@@ -11,9 +35,28 @@ const Sidebar = () => {
         <Menu.Item>
           <Input placeholder="Search..." />
         </Menu.Item>
+        <Menu.Item>
+          <Dropdown
+            clearable
+            fluid
+            // multiple
+            search
+            selection
+            options={CategoriesFilter}
+            placeholder="Filter By Category"
+            onChange={(e, m) => handleCategoryChange(m.value)}
+          />
+        </Menu.Item>
 
         <Menu.Item>
-          Home
+          <Dropdown item text="Category">
+            <Dropdown.Menu>
+              <Dropdown.Header>Category</Dropdown.Header>
+              <Dropdown.Item>Create Category</Dropdown.Item>
+              {/* <Dropdown.Item>Medium</Dropdown.Item>
+              <Dropdown.Item>Large</Dropdown.Item> */}
+            </Dropdown.Menu>
+          </Dropdown>
           <Menu.Menu>
             <Menu.Item
               name="search"
