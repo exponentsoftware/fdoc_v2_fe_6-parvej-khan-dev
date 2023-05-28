@@ -9,10 +9,11 @@ import { postActions } from "../../Redux/Slice/eventSlice";
 const Sidebar = () => {
   const [open, setOpen] = useState(false);
   const [catgoryname, setCategoryName] = useState("");
+  const [search, setSearch] = useState("");
   const dispatch = useDispatch();
   const [activeItem, setActiveItem] = useState("home");
   const categories = useSelector((state) => state.category.categories);
-  const events = useSelector((state) => state.event.events);
+  // const events = useSelector((state) => state.event.events);
   // handle model
   const handleOpen = () => {
     setOpen(true);
@@ -27,6 +28,7 @@ const Sidebar = () => {
       console.log(res, "res");
       if (res.meta.requestStatus === "fulfilled") {
         window.alert("Category Created Successfully");
+        window.location.reload();
       }
     });
   };
@@ -38,6 +40,12 @@ const Sidebar = () => {
   const handleCategoryChange = (selectedCategories) => {
     console.log(selectedCategories, "selectCatries");
     dispatch(postActions.setEvents(selectedCategories));
+  };
+
+  const handleSearchQueryChange = (e) => {
+    const searchQuery = e.target.value;
+    setSearch(searchQuery);
+    dispatch(postActions.setSearchQuery(searchQuery));
   };
 
   console.log;
@@ -54,7 +62,13 @@ const Sidebar = () => {
       {" "}
       <Menu vertical style={{ height: "86vh" }}>
         <Menu.Item>
-          <Input placeholder="Search..." />
+          <Input
+            placeholder="Search..."
+            value={search}
+            onChange={(e) => {
+              handleSearchQueryChange(e);
+            }}
+          />
         </Menu.Item>
         <Menu.Item>
           <Dropdown

@@ -15,11 +15,11 @@ import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [activeItem, setActiveItem] = useState("home");
-  const eventCreated = useSelector((state) => state.event.post);
+  // const eventCreated = useSelector((state) => state.event.post);
   const categories = useSelector((state) => state.category.categories);
-  const error = useSelector((state) => state.event.error);
+  // const error = useSelector((state) => state.event.error);
   const handleItemClick = (e, { name }) => setActiveItem(name);
-  const [selectedImage, setSelectedImage] = useState(null);
+  // const [selectedImage, setSelectedImage] = useState(null);
   const [reload, setReload] = useState(false);
   const [value, setValue] = useState({
     title: "",
@@ -49,7 +49,13 @@ const Navbar = () => {
       // formData.append("image", selectedImage);
       formData.append("category", value.category);
       console.log(formData, "formdata");
-      dispatch(createEvents(value));
+      dispatch(createEvents(value)).then((res) => {
+        if (res.meta.requestStatus === "fulfilled") {
+          console.log(res, "event created");
+          window.alert("Event Created Sucessfully");
+          window.location.reload()
+        }
+      });
       setReload((value) => !value);
     } catch (error) {
       console.error("Error creating event:", error.message);

@@ -3,17 +3,14 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { API } from "../../backend";
 
-const createEvents = createAsyncThunk(  
-  "event/create",
-  async (data, { rejectWithValue }) => {
-    try {
-      const { response } = await axios.post(`${API}/new/event`, data);
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.message);
-    }
+const createEvents = createAsyncThunk("event/create", async (data) => {
+  try {
+    const response = await axios.post(`${API}/new/event`, data);
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
   }
-);
+});
 
 const getEventByID = createAsyncThunk("events/findOne", async (EventId) => {
   try {
@@ -23,9 +20,11 @@ const getEventByID = createAsyncThunk("events/findOne", async (EventId) => {
     throw error.response.data;
   }
 });
-const getEvents = createAsyncThunk("/events", async () => {
+const getEvents = createAsyncThunk("/events", async ({ page, limit }) => {
   try {
-    const response = await axios.get(`${API}/all/events`);
+    const response = await axios.get(
+      `${API}/filter/events?page=${page}&limit=${limit}`
+    );
     return response.data;
   } catch (error) {
     throw error.response.data;
@@ -57,9 +56,12 @@ const initialState = {
   events: [],
   updateEvent: null,
   deletedEvent: null,
+  searchQuery: null,
   loading: false,
   error: null,
   updateModelOpen: false,
+  currentPage: 1,
+  totalPages: 1,
 };
 
 const eventSlice = createSlice({
@@ -74,11 +76,12 @@ const eventSlice = createSlice({
     },
     setEvents: (state, action) => {
       const categories = action.payload;
-      // Update the events state based on the categories
-      // For example, filter events based on categories:
       state.events = state.events.filter((event) =>
         categories.includes(event.category.name)
       );
+    },
+    setSearchQuery: (state, action) => {
+      state.searchQuery = action.payload;
     },
   },
   extraReducers: (builder) => {

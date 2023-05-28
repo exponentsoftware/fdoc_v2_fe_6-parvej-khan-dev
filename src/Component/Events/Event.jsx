@@ -8,6 +8,7 @@ import {
   deleteEvent,
 } from "../../Redux/Slice/eventSlice";
 import { getCatagories } from "../../Redux/Slice/categorySlice";
+
 import {
   Image,
   Button,
@@ -19,15 +20,22 @@ import {
   Select,
   Modal,
   Icon,
+  Label,
+  Pagination,
 } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 const Event = () => {
-  const events = useSelector((state) => state.event.events);
+  let events = useSelector((state) => state.event.events);
   const updateData = useSelector((state) => state.event.post);
   const categories = useSelector((state) => state.category.categories);
   const updateEvent = useSelector((state) => state.event.updateEvent);
   const loading = useSelector((state) => state.event.loading);
+  const searchQuery = useSelector((state) => state.event.searchQuery);
+  const currentPage = useSelector((state) => state.event.currentPage);
+  const totalPages = useSelector((state) => state.event.totalPages);
+
   const [updateContentID, setUpdateContent] = useState("");
+
   const [value, setValue] = useState({
     title: updateData?.title,
     description: updateData?.description,
@@ -65,6 +73,16 @@ const Event = () => {
         });
     }
   }, [updateContentID]);
+
+  // pagination
+
+  useEffect(() => {
+    dispatch(getEvents({ page: currentPage, limit: 3 }));
+  }, [dispatch, currentPage]);
+
+  const handlePageChange = (pageNumber) => {
+    dispatch(getEvents({ page: pageNumber, limit: 3 }));
+  };
 
   const updateEventDate = (id) => {
     // try {
@@ -105,18 +123,6 @@ const Event = () => {
   };
 
   useEffect(() => {
-    dispatch(getEvents())
-      .unwrap()
-      .then((res) => {
-        console.log(res);
-        // setData(res);
-      })
-      .catch((err) => {
-        console.log(err, "from events");
-      });
-
-    // get All Categories
-
     dispatch(getCatagories())
       .unwrap()
       .then((res) => {
@@ -130,20 +136,31 @@ const Event = () => {
     // console.log(data, "data");
   }, []);
 
-  console.log(updateContentID, "updateContentID");
+  // filterSearch
+  // events = events[2];
+  const filteredEvents =
+    searchQuery && events && events.documents
+      ? events.documents.filter(
+          (event) =>
+            event.title.toLowerCase().includes(searchQuery.toLowerCase())
+          // || event.description.includes(searchQuery)
+        )
+      : events && events.documents // Check if events and events.documents exist
+      ? events.documents // If they exist, return all the documents
+      : [];
+
+  console.log(events, "events");
+  console.log(events[0]?.totalPages, "total page");
 
   const categoryOptions = categories.map((category) => {
     return { key: category._id, text: category.name, value: category._id };
   });
 
-  console.log(categories, "categories ");
-  console.log(events, "events ");
-
   return (
     <>
-      <div style={{ marginLeft: 10, marginRight: 10 }}>
+      <div style={{ marginLeft: 10, marginTop: 10, marginRight: 10 }}>
         <Card.Group doubling itemsPerRow={3} stackable>
-          {events.map((card, index) => (
+          {filteredEvents.map((card, index) => (
             <Card key={card?.id}>
               {loading ? (
                 <Placeholder>
@@ -152,19 +169,36 @@ const Event = () => {
               ) : (
                 <div
                   style={{
-                    maxHeight: "200px",
+                    height: "200px",
                     overflow: "hidden",
                     borderRadius: 20,
+                    position: "relative",
                   }}
                 >
-                  <Image
-                    src={`https://picsum.photos/200/300?random=${index}`}
-                    style={{
-                      objectFit: "cover",
-                      height: "100%",
-                      width: "100%",
-                    }}
-                  />
+                  <div style={{ position: "relative" }}>
+                    <Image
+                      src={`https://picsum.photos/200/300?random=${index}`}
+                      style={{
+                        objectFit: "cover",
+                        height: "100%",
+                        width: "100%",
+                      }}
+                    />
+                    <Label
+                      as="a"
+                      color="orange"
+                      ribbon="right"
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: "calc(100% - 0px)",
+                        zIndex: 1,
+                        // opacity: 0.8,
+                      }}
+                    >
+                      {card.category.name}
+                    </Label>
+                  </div>
                 </div>
               )}
 
@@ -361,6 +395,49 @@ const Event = () => {
             />
           </Modal.Actions>
         </Modal>
+        {/* <Pagination defaultActivePage={5} totalPages={10} style={{margin: "20px auto"}} /> */}
+        {/* Render the pagination */}
+
+        {events && events.documents && (
+          <div style={{ margin: "30px auto", textAlign: "center" }}>
+            {currentPage > 1 && (
+              <button onClick={() => handlePageChange(currentPage - 1)}>
+                Previous
+              </button>
+            )}
+
+            <Pagination
+              defaultActivePage={currentPage}
+              ellipsisItem={{
+                content: <Icon name="ellipsis horizontal" />,
+                icon: true,
+              }}
+              firstItem={{
+                content: <Icon name="angle double left" />,
+                icon: true,
+              }}
+              lastItem={{
+                content: <Icon name="angle double right" />,
+                icon: true,
+              }}
+              prevItem={{ content: <Icon name="angle left" />, icon: true }}
+              nextItem={{ content: <Icon name="angle right" />, icon: true }}
+              totalPages={events && events.totalPages}
+              onPageChange={(e, { activePage }) => handlePageChange(activePage)}
+              style={{
+                // display:"inline-block",
+                margin: 10,
+                fontSize: 15,
+              }}
+            />
+
+            {currentPage < totalPages && (
+              <button onClick={() => handlePageChange(currentPage + 1)}>
+                Next
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </>
   );
