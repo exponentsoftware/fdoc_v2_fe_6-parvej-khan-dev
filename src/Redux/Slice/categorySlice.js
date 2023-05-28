@@ -3,7 +3,6 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { API } from "../../backend";
 
-
 const getCatagories = createAsyncThunk("/categories", async () => {
   try {
     const response = await axios.get(`${API}/category`);
@@ -13,9 +12,19 @@ const getCatagories = createAsyncThunk("/categories", async () => {
   }
 });
 
+const createCatagories = createAsyncThunk("/create/category", async (data) => {
+  try {
+    const response = await axios.post(`${API}/create/category`, data);
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+});
+
 const initialState = {
   categories: [],
   loading: false,
+  category:null,
   error: null,
 };
 
@@ -37,10 +46,23 @@ const categoriesSlice = createSlice({
       .addCase(getCatagories.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
+      })
+      // * create Category
+      .addCase(createCatagories.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createCatagories.fulfilled, (state, action) => {
+        state.loading = false;
+        state.category = action.payload;
+      })
+      .addCase(createCatagories.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
       });
   },
 });
 
 export const { actions: catActions } = categoriesSlice;
 export const categoryReducer = categoriesSlice.reducer;
-export { getCatagories };
+export { getCatagories, createCatagories };

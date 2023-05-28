@@ -3,7 +3,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { API } from "../../backend";
 
-const createEvents = createAsyncThunk(
+const createEvents = createAsyncThunk(  
   "event/create",
   async (data, { rejectWithValue }) => {
     try {

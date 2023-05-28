@@ -1,14 +1,35 @@
 import { useEffect, useState } from "react";
-import { Dropdown, Input, Menu } from "semantic-ui-react";
+import { Dropdown, Input, Menu, Modal, Button, Form } from "semantic-ui-react";
 import { useDispatch, useSelector } from "react-redux";
-// import { getCatagories } from "../../Redux/Slice/categorySlice";
+import {
+  getCatagories,
+  createCatagories,
+} from "../../Redux/Slice/categorySlice";
 import { postActions } from "../../Redux/Slice/eventSlice";
-import { getCatagories } from "../../Redux/Slice/categorySlice";
 const Sidebar = () => {
+  const [open, setOpen] = useState(false);
+  const [catgoryname, setCategoryName] = useState("");
   const dispatch = useDispatch();
   const [activeItem, setActiveItem] = useState("home");
   const categories = useSelector((state) => state.category.categories);
   const events = useSelector((state) => state.event.events);
+  // handle model
+  const handleOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  // create category
+  const createCategory = (data) => {
+    dispatch(createCatagories(data)).then((res) => {
+      console.log(res, "res");
+      if (res.meta.requestStatus === "fulfilled") {
+        window.alert("Category Created Successfully");
+      }
+    });
+  };
 
   useEffect(() => {
     dispatch(getCatagories());
@@ -52,9 +73,9 @@ const Sidebar = () => {
           <Dropdown item text="Category">
             <Dropdown.Menu>
               <Dropdown.Header>Category</Dropdown.Header>
-              <Dropdown.Item>Create Category</Dropdown.Item>
-              {/* <Dropdown.Item>Medium</Dropdown.Item>
-              <Dropdown.Item>Large</Dropdown.Item> */}
+              <Dropdown.Item onClick={() => handleOpen()}>
+                Create Category
+              </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
           <Menu.Menu>
@@ -82,14 +103,6 @@ const Sidebar = () => {
           </Menu.Menu>
         </Menu.Item>
 
-        {/* <Menu.Item
-          name="browse"
-          active={activeItem === "browse"}
-          onClick={handleItemClick}
-        >
-          <Icon name="grid layout" />
-          Browse
-        </Menu.Item> */}
         <Menu.Item
           name="messages"
           active={activeItem === "messages"}
@@ -104,6 +117,43 @@ const Sidebar = () => {
           </Dropdown.Menu>
         </Dropdown>
       </Menu>
+      {/* Model  */}
+      <Modal
+        size="tiny"
+        open={open}
+        onClose={() => handleClose()}
+        onOpen={() => handleOpen()}
+      >
+        <Modal.Header>Delete Your Account</Modal.Header>
+        <Modal.Content>
+          <Form>
+            <Form.Field>
+              <label>Category Name</label>
+              <input
+                placeholder="Category Name"
+                onChange={(e) => setCategoryName(e.target.value)}
+              />
+            </Form.Field>
+          </Form>
+        </Modal.Content>
+        <Modal.Actions>
+          <Button negative onClick={() => handleClose()}>
+            Close
+          </Button>
+          <Button
+            positive
+            onClick={() => {
+              let data = {
+                name: catgoryname,
+              };
+              createCategory(data);
+              handleClose();
+            }}
+          >
+            Submit
+          </Button>
+        </Modal.Actions>
+      </Modal>
     </div>
   );
 };
